@@ -21,13 +21,7 @@ temporarily, and deliver them to consumers reliably.
 
 **Flow diagram (right side):**
 
-Producer
-↓
-Exchange
-↓
-Queue
-↓
-Consumer
+Producer --> Exchange  --> Queue --> Consumer
 
 ---
 
