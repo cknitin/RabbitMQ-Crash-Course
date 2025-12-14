@@ -178,3 +178,113 @@ channel.BasicPublish(
 * Urgent notifications
 * Critical updates
 
+---
+
+## 3. Dead Letter Queue (DLQ)
+
+Stores failed messages that couldn’t be processed successfully.
+
+Typically connected via a **Dead Letter Exchange (DLX)**.
+
+---
+
+### Setup Main Queue with DLQ (C#)
+
+```csharp
+using RabbitMQ.Client;
+using System.Collections.Generic;
+
+var factory = new ConnectionFactory() { HostName = "localhost" };
+using var connection = factory.CreateConnection();
+using var channel = connection.CreateModel();
+
+var mainQueueArgs = new Dictionary<string, object>
+{
+    { "x-dead-letter-exchange", "dlx_exchange" },
+    { "x-dead-letter-routing-key", "dead.msg" }
+};
+
+channel.QueueDeclare(
+    queue: "mainQueue",
+    durable: true,
+    exclusive: false,
+    autoDelete: false,
+    arguments: mainQueueArgs
+);
+```
+
+---
+
+### Declare DLQ and Bind to DLX (C#)
+
+```csharp
+channel.ExchangeDeclare(
+    exchange: "dlx_exchange",
+    type: ExchangeType.Direct,
+    durable: true
+);
+
+channel.QueueDeclare(
+    queue: "dlqQueue",
+    durable: true,
+    exclusive: false,
+    autoDelete: false
+);
+
+channel.QueueBind(
+    queue: "dlqQueue",
+    exchange: "dlx_exchange",
+    routingKey: "dead.msg"
+);
+```
+
+---
+
+### Use Cases
+
+* Error handling
+* Retries
+* Message auditing
+
+---
+
+---
+
+## 4. Lazy Queue
+
+Stores messages on **disk immediately instead of memory**.
+
+Reduces **RAM usage** when message volume is high.
+
+Slightly slower, but very **memory efficient**.
+
+---
+
+### Setup Lazy Queue (C#)
+
+```csharp
+var lazyQueueArgs = new Dictionary<string, object>
+{
+    { "x-queue-mode", "lazy" }
+};
+
+channel.QueueDeclare(
+    queue: "lazyQueue",
+    durable: true,
+    exclusive: false,
+    autoDelete: false,
+    arguments: lazyQueueArgs
+);
+```
+
+---
+
+### Use Cases
+
+* Large queues
+* Background workloads
+* High backlog systems
+
+---
+
+
