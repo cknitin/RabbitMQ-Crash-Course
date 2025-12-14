@@ -1,11 +1,5 @@
 # RabbitMQ Crash Course
 
----
-
-Here’s the text extracted from the image (manually transcribed for accuracy):
-
----
-
 **RabbitMQ**
 
 RabbitMQ is an open-source message broker (aka message queue).
