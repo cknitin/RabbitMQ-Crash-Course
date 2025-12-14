@@ -1,7 +1,5 @@
 # RabbitMQ Crash Course
 
-Here’s a **cleaned-up and improved version**, keeping the same idea but making it clearer, more structured, and a bit more professional:
-
 ---
 
 ## RabbitMQ
