@@ -287,4 +287,122 @@ channel.QueueDeclare(
 
 ---
 
+## 5. TTL Queue (Time-To-Live)
+
+Messages automatically expire after a certain time.
+
+---
+
+### Setup TTL Queue (C#)
+
+```csharp
+using RabbitMQ.Client;
+using System.Collections.Generic;
+
+var factory = new ConnectionFactory() { HostName = "localhost" };
+using var connection = factory.CreateConnection();
+using var channel = connection.CreateModel();
+
+var ttlQueueArgs = new Dictionary<string, object>
+{
+    { "x-message-ttl", 10000 } // 10 seconds
+};
+
+channel.QueueDeclare(
+    queue: "ttlQueue",
+    durable: true,
+    exclusive: false,
+    autoDelete: false,
+    arguments: ttlQueueArgs
+);
+```
+
+---
+
+### Use Cases
+
+* Temporary notifications
+* Caching
+* Expiring tasks
+
+---
+
+## 6. Single Active Consumer Queue
+
+Only **one consumer** is active at a time.
+
+If it disconnects, another consumer takes over.
+
+Ensures **message order** and **sequential processing**.
+
+---
+
+### Setup Single Active Consumer Queue (C#)
+
+```csharp
+var sacQueueArgs = new Dictionary<string, object>
+{
+    { "x-single-active-consumer", true }
+};
+
+channel.QueueDeclare(
+    queue: "sacQueue",
+    durable: true,
+    exclusive: false,
+    autoDelete: false,
+    arguments: sacQueueArgs
+);
+```
+
+---
+
+### Use Cases
+
+* Tasks that must be processed in **strict order**
+* Sequential workflows
+* Financial or stateful processing
+
+---
+
+## 7. Stream Queue (Newer Feature)
+
+Hybrid between a **queue** and a **Kafka-like topic**.
+
+Messages are **retained for a configurable time** (like Kafka).
+
+Consumers can **replay messages using offsets**.
+
+---
+
+### Setup Stream Queue (C#)
+
+```csharp
+var streamQueueArgs = new Dictionary<string, object>
+{
+    { "x-queue-type", "stream" },
+    { "x-max-age", "1h" } // message retention period
+};
+
+channel.QueueDeclare(
+    queue: "streamQueue",
+    durable: true,
+    exclusive: false,
+    autoDelete: false,
+    arguments: streamQueueArgs
+);
+```
+
+> ⚠️ Stream queues require **RabbitMQ 3.9+** and the **stream plugin enabled**.
+
+---
+
+### Use Cases
+
+* Event streaming
+* Audit logging
+* Replayable systems
+* Analytics pipelines
+
+---
+
 
